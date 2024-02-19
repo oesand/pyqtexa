@@ -1,3 +1,3 @@
 from . import widgets
-from .config import AppConfig
-from .pathhelper import AppPathHelper
+from . import conf
+from .mixins import *
