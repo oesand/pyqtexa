@@ -14,13 +14,13 @@ def lineLayout(*,
     stretch: dict[int, int] | None = None,
     padding: tuple[int, int, int, int] | None = None,
     spacing: int | None = None,
-):
+) -> QVBoxLayout | QHBoxLayout:
     layout = QVBoxLayout() if vertical else QHBoxLayout()
     if id: layout.setObjectName(id)
     if items:
         for item in items:
             if isinstance(item, LayoutWrap):
-                item = item.render()
+                item = item._extract()
             if isinstance(item, QLayout):
                 layout.addLayout(item)
             elif isinstance(item, QWidget):

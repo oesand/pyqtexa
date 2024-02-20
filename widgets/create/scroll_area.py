@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from .widget_wrap import WidgetKwargs, widget as wrap_widget
 
 
-def scrollArea(*,
+def scrollArea(
     vertical: bool | None = True,
     resizable: bool | None = None,
     content: QWidget | None = None,

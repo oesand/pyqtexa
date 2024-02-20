@@ -22,7 +22,7 @@ def tabView(*,
     if mapping:
         for title, child in mapping.items():
             if isinstance(child, LayoutWrap):
-                child = child.render()
+                child = child._extract()
             if isinstance(child, QLayout):
                 child = wrap_widget(layout=child)
             if isinstance(child, QWidget):

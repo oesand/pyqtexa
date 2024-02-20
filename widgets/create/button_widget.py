@@ -1,5 +1,4 @@
-from collections.abc import Callable
-from typing import Unpack
+from typing import Unpack, Callable
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon

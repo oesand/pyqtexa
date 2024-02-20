@@ -5,8 +5,8 @@ from ..utils import applyAlignment
 from .widget_wrap import WidgetKwargs, widget
 
 
-def label(*,
-    text: str | None = None,
+def label(
+    text: str | None, *,
     alignment: str | None = None,
     scaled: bool | None = None,
     **extra: Unpack[WidgetKwargs]

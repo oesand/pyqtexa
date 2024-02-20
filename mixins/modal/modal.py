@@ -34,7 +34,7 @@ class OverflowModal:
         closeEvery: bool = False,
     ):
         if isinstance(content, LayoutWrap):
-            content = content.render()
+            content = content._extract()
             
         root: QWidget = self.__window.centralWidget()
         
@@ -71,4 +71,5 @@ class OverflowModal:
     
     def _onApplySize(self, ev: QResizeEvent):
         if not self.shown: return
-        self.__shownContext.overflow.resize(ev.size())
+        for widget in self.__shownContext:
+            widget.resize(ev.size())

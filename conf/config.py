@@ -7,37 +7,39 @@ class Configuration:
         self, path: str | Path, *, 
         default: dict = None
     ):
-        self._path = path if isinstance(path, Path) else Path(path)
-        self._data = default or {}
+        self.__path = path if isinstance(path, Path) else Path(path)
+        self.__default = default
+        self.__data = default or {}
         
-        if self._path.exists():
+        if self.__path.exists():
             try:
-                with open(str(self._path), 'r') as f:
-                    self._data = json.load(f)
+                with open(str(self.__path), 'r') as f:
+                    self.__data = json.load(f)
             except:
                 pass
         else:
-            self._path.parent.mkdir(exist_ok=True)        
+            self.__path.parent.mkdir(exist_ok=True)        
 
     def __enter__(self):
-        return self.data
+        return self
 
     def __exit__(self, *args):
         self.save()
 
     def __getitem__(self, name: str):
-        return self.data[name]
+        try:
+            return self.__data[name]
+        except KeyError:
+            if not self.__default or name not in self.__default:
+                raise KeyError(f"Configuration has no '{name}' key.")
+            return self.__default[name]
 
     def __setitem__(self, name: str, value):
-        self.data[name] = value
+        self.__data[name] = value
 
     def get(self, name: str, *, default = None):
-        return self.data.get(name, default)
+        return self.__data.get(name, default)
     
-    @property
-    def data(self):
-        return self._data
-
     def save(self):
-        with open(str(self._path), 'w') as f:
-            json.dump(self._data, f)
+        with open(str(self.__path), 'w') as f:
+            json.dump(self.__data, f)

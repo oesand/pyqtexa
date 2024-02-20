@@ -15,6 +15,7 @@ def imageView(*,
     
     container: QLabel = label(
         **extra,
+        text=None,
         scaled=True,
         alignment="center",
     )

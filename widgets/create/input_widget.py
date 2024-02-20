@@ -1,5 +1,4 @@
-from collections.abc import Callable
-from typing import Unpack
+from typing import Unpack, Callable
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtGui import QValidator
 
@@ -11,7 +10,7 @@ def inputField(*,
     placeholder: str | None = None,
     input_mask: str | None = None,
     validator: QValidator | None = None,
-    textChanged: Callable | None = None,
+    textChanged: Callable[[str], None] | None = None,
     readonly: bool | None = None,
     **extra: Unpack[WidgetKwargs]
 ):
@@ -20,7 +19,7 @@ def inputField(*,
     if placeholder: input.setPlaceholderText(placeholder)
     if input_mask: input.setInputMask(input_mask)
     if validator: input.setValidator(validator)
-    if textChanged: input.textChanged.connect(textChanged)
+    if textChanged: input.textChanged.connect(lambda: textChanged(input.text()))
     if readonly is not None: input.setReadOnly(readonly)
     
     if extra: widget(**extra, widget=input)

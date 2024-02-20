@@ -1,7 +1,9 @@
+from typing import Any
 from PyQt5.QtWidgets import QMainWindow, QLayout
 from PyQt5.QtGui import QResizeEvent
 
-from ...widgets import create
+from ...widgets import create, LayoutWrap
+from .layout_wrap import ModalLayoutWrap
 from .modal import OverflowModal
 
 
@@ -11,16 +13,23 @@ class OverflowModalMixin:
         self.overflowModal = OverflowModal(self)
     
     def showModal(
-        self, content: QLayout, *,
+        self, content: QLayout | type[ModalLayoutWrap] | ModalLayoutWrap, *,
         closeManually: bool = True,
+        closeEvery: bool = False,
+        signal: dict[str, Any] = None
     ):
+        if isinstance(content, type(LayoutWrap)):
+            content = content(self)
+        if isinstance(content, ModalLayoutWrap) and signal:
+            content.signal(**signal)
         self.overflowModal.show(
             content=content,
-            closeManually=closeManually
+            closeManually=closeManually,
+            closeEvery=closeEvery
         )
     
-    def hideModal(self):
-        self.overflowModal.hide()
+    def hideModal(self, *, every: bool = False):
+        self.overflowModal.hide(every=every)
     
     def showTextPopup(self, text: str, *, okayText: str = "OK"):
         self.showModal(

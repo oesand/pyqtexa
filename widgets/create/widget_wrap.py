@@ -1,15 +1,15 @@
-from typing import TypedDict, Unpack
+from typing import TypedDict, Unpack, NotRequired
 from PyQt5.QtWidgets import QLayout, QWidget
 
 
 class WidgetKwargs(TypedDict):
-    id: str
-    parent: QWidget
-    layout: QLayout
-    stylesheet: str
-    visible: bool
-    enabled: bool
-    fixed_size: tuple[int, int] | int
+    id: NotRequired[str]
+    parent: NotRequired[QWidget]
+    layout: NotRequired[QLayout]
+    stylesheet: NotRequired[str]
+    visible: NotRequired[bool]
+    enabled: NotRequired[bool]
+    fixedSize: NotRequired[tuple[int, int] | int]
 
 
 def widget(*,
@@ -26,8 +26,8 @@ def widget(*,
     if "visible" in kwargs: widget.setVisible(kwargs["visible"])
     if "enabled" in kwargs: widget.setEnabled(kwargs["enabled"])
     
-    if "fixed_size" in kwargs:
-        size = kwargs["fixed_size"]
+    if "fixedSize" in kwargs:
+        size = kwargs["fixedSize"]
         if isinstance(size, int):
             widget.setFixedSize(size, size)
         elif isinstance(size, tuple):
