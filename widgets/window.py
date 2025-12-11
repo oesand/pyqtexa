@@ -1,20 +1,38 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLayout
-from PyQt5.QtGui import QFont, QIcon
-from .create import widget as create_widget
+from typing import Callable, Unpack
+
+from PyQt6.QtCore import QSize
+from PyQt6.QtGui import QIcon, QFont
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QStatusBar, QMenuBar, QToolBar, QLayout
+
+from .widget import WidgetKwargs, widget
 
 
-class QBMainWindow(QMainWindow):
-    
+class MainWindow(QMainWindow):
     def __init__(
-        self, *,
+        self,
+        *,
         parent: QMainWindow | None = None,
         icon: str | None = None,
         title: str | None = None,
         size: tuple[int, int] | int | None = None,
         font: QFont | tuple[str, int] | None = None,
         stylesheet: str | None = None,
+        root: QWidget | QLayout = None,
+        statusBar: QStatusBar = None,
+        menuBar: QMenuBar = None,
+        toolBars: list[QToolBar] = None,
+        # Signals
+        onWindowTitleChanged: Callable[[str], None] = None,
+        onWindowIconChanged: Callable[[QIcon], None] = None,
+        onIconSizeChanged: Callable[[QSize], None] = None,
+        onStatusBarChanged: Callable[[QStatusBar], None] = None,
+        onMenuBarChanged: Callable[[QMenuBar], None] = None,
+        onToolBarAdded: Callable[[QToolBar], None] = None,
+        onToolBarRemoved: Callable[[QToolBar], None] = None,
+        **kwargs: Unpack[WidgetKwargs]
     ):
-        super(QMainWindow, self).__init__(parent=parent)
+        super().__init__(parent=parent)
+
         if icon: self.setWindowIcon(QIcon(str(icon)))
         if title: self.setWindowTitle(title)
         if size:
@@ -22,24 +40,57 @@ class QBMainWindow(QMainWindow):
                 self.resize(size[0], size[1])
             else:
                 self.resize(size, size)
+
         if font is not None:
             if isinstance(font, tuple):
-                font = QFont(font[0], font[1])
+                font = QFont(*font)
             if isinstance(font, QFont):
                 self.setFont(font)
+
         if stylesheet:
             self.setStyleSheet(stylesheet)
-        
-        root = self.render()
-        if root:
+
+        if root is not None:
             if isinstance(root, QLayout):
-                root = create_widget(layout=root)
+                self.setLayout(root)
             if isinstance(root, QWidget):
                 self.setCentralWidget(root)
 
-    def render(self) -> QWidget:
-        return None
-    
+        if statusBar is not None:
+            self.setStatusBar(statusBar)
+
+        if menuBar is not None:
+            self.setMenuBar(menuBar)
+
+        if toolBars:
+            for tb in toolBars:
+                self.addToolBar(tb)
+
+        # ---------- Signals ----------
+        if onWindowTitleChanged is not None:
+            self.windowTitleChanged.connect(onWindowTitleChanged)
+
+        if onWindowIconChanged is not None:
+            self.windowIconChanged.connect(onWindowIconChanged)
+
+        if onIconSizeChanged is not None:
+            self.iconSizeChanged.connect(onIconSizeChanged)
+
+        if onStatusBarChanged is not None:
+            self.statusBarChanged.connect(onStatusBarChanged)
+
+        if onMenuBarChanged is not None:
+            self.menuBarChanged.connect(onMenuBarChanged)
+
+        if onToolBarAdded is not None:
+            self.toolBarAdded.connect(onToolBarAdded)
+
+        if onToolBarRemoved is not None:
+            self.toolBarRemoved.connect(onToolBarRemoved)
+
+        # ---- apply base QWidget params ----
+        widget(**kwargs, _widget=self)
+
     @classmethod
     def execute(cls):
         app = QApplication([])

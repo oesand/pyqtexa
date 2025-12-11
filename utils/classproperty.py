@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar, Self
+from typing import Callable, TypeVar
 
 
 class ClassPropertyDescriptor(object):
@@ -25,7 +25,7 @@ class ClassPropertyDescriptor(object):
 
 
 T = TypeVar('T')
-def classproperty(func: Callable[[Self], T]) -> T:
+def classproperty(func: Callable[[any], T]) -> T:
     if not isinstance(func, (classmethod, staticmethod)):
         func = classmethod(func)
 
