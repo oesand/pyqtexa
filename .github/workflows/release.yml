@@ -67,39 +67,16 @@ jobs:
       - name: 📦 Build package
         run: poetry run python -m build
 
-      - name: 🏷 Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          
-          FLAGS="--title $GITHUB_REF_NAME --generate-notes"
-          
-          if [[ "$GITHUB_REF_NAME" == *".0" ]]; then
-            echo "🟢 Detected minor release ($VERSION) — creating release"
-          else
-            echo "🟡 Detected patch release ($VERSION) — creating prerelease"
-            FLAGS="$FLAGS --prerelease"
-          fi
-          
-          gh release create $GITHUB_REF_NAME $FLAGS
-
       - name: 🚀 Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: poetry run twine upload dist/*
 
-      - name: 🧲 Yank prerelease on PyPI
-        if: endsWith(github.ref_name, '.0') == false   # if patch != 0 → prerelease
+      - name: 🏷 Create GitHub Release
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          
-          # Extract package name from pyproject.toml
-          PACKAGE_NAME=$(grep '^name =' pyproject.toml | sed 's/name = "\(.*\)"/\1/')
-          
-          echo "🟡 Yanking prerelease: $PACKAGE_NAME $VERSION"
-          poetry run twine yank "$PACKAGE_NAME" "$VERSION" -m "Auto-yanked prerelease"
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes
