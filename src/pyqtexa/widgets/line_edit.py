@@ -26,7 +26,7 @@ class LineEditKwargs(WidgetKwargs):
     onReturnPressed: NotRequired[Callable[[], None]]
 
 
-def lineEdit(*, _edit: QLineEdit | None = None, **kwargs: Unpack[LineEditKwargs]):
+def lineEdit(*, _edit: QLineEdit | None = None, **kwargs: Unpack[LineEditKwargs]) -> QLineEdit:
     if _edit is None:
         _edit = QLineEdit()
 

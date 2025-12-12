@@ -15,7 +15,7 @@ class ScrollAreaKwargs(WidgetKwargs):
     frameShadow: NotRequired[QFrame.Shadow]
 
 
-def scroll(*, _scroll: QScrollArea | None = None, **kwargs: Unpack[ScrollAreaKwargs]):
+def scroll(*, _scroll: QScrollArea | None = None, **kwargs: Unpack[ScrollAreaKwargs]) -> QScrollArea:
     if _scroll is None:
         _scroll = QScrollArea()
 

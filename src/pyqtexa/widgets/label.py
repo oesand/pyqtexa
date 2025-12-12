@@ -20,7 +20,7 @@ class LabelKwargs(WidgetKwargs):
     pixmap: NotRequired[QPixmap]
 
 
-def label(*, _label: QLabel | None = None, **kwargs: Unpack[LabelKwargs]):
+def label(*, _label: QLabel | None = None, **kwargs: Unpack[LabelKwargs]) -> QLabel:
     if _label is None:
         _label = QLabel()
 

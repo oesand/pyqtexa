@@ -17,7 +17,7 @@ class BoxLayoutKwargs(TypedDict):
     widgets: NotRequired[list[QWidget]]
 
 
-def boxLayout(*, _layout: QBoxLayout | None = None, **kwargs: Unpack[BoxLayoutKwargs]):
+def boxLayout(*, _layout: QBoxLayout | None = None, **kwargs: Unpack[BoxLayoutKwargs]) -> QBoxLayout:
     if _layout is None:
         _layout = QBoxLayout(kwargs.get("direction") or BoxLayoutDirection.TopToBottom)
     elif (v := kwargs.get("direction")) is not None:

@@ -76,7 +76,7 @@ class WidgetKwargs(TypedDict):
     onCustomContextMenuRequested: NotRequired[Callable[[QPoint], None]]
 
 
-def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]):
+def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]) -> QWidget:
     if _widget is None:
         _widget = QWidget()
 

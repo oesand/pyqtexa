@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QFrame
 from .widget import WidgetKwargs, widget
 
 
-def divider(vertical: bool, **kwargs: Unpack[WidgetKwargs]):
+def divider(vertical: bool, **kwargs: Unpack[WidgetKwargs]) -> QFrame:
     line = QFrame()
     if vertical:
         line.setGeometry(0, 0, 3, 50)

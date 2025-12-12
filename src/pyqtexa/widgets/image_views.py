@@ -8,7 +8,7 @@ from .label import label, LabelKwargs, Align
 def gifView(
     path: str,
     **extra: Unpack[LabelKwargs]
-):
+) -> QLabel:
     container: QLabel = label(
         **extra,
         scaledContents=True,
@@ -23,7 +23,7 @@ def gifView(
 def pictureView(
     src: str | bytes,
     **extra: Unpack[LabelKwargs]
-):
+) -> QLabel:
     container: QLabel = label(
         **extra,
         scaledContents=True,

@@ -22,7 +22,7 @@ class ButtonKwargs(WidgetKwargs):
     onToggled: NotRequired[Callable[[bool], None]]
 
 
-def button(*, _button: QPushButton | None = None, **kwargs: Unpack[ButtonKwargs]):
+def button(*, _button: QPushButton | None = None, **kwargs: Unpack[ButtonKwargs]) -> QPushButton:
     if _button is None:
         _button = QPushButton()
 

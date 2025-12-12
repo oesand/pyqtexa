@@ -29,7 +29,7 @@ class TableWidgetKwargs(WidgetKwargs):
     onItemChanged: NotRequired[Callable[[object], None]]
 
 
-def table(*, _table: QTableWidget | None = None, **kwargs: Unpack[TableWidgetKwargs]):
+def table(*, _table: QTableWidget | None = None, **kwargs: Unpack[TableWidgetKwargs]) -> QTableWidget:
     if _table is None:
         _table = QTableWidget()
 

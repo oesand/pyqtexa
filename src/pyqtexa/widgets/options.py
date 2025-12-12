@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QDoubleValidator, QIntValidator
+from PyQt6.QtGui import QDoubleValidator, QIntValidator, QValidator
 
 
 class Align:
@@ -19,7 +19,7 @@ class Align:
     Baseline = Qt.AlignmentFlag.AlignBaseline
 
 
-def numericLimitRule(*, double: bool = False, start: float = 0, end: float = None):
+def numericLimitRule(*, double: bool = False, start: float = 0, end: float = None) -> QValidator:
     val = QDoubleValidator() if double else QIntValidator()
     if start is not None: val.setBottom(start)
     if end is not None: val.setTop(end)

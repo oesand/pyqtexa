@@ -1,7 +1,7 @@
 from typing import Callable, Unpack
 
 from PyQt6.QtCore import QSize
-from PyQt6.QtGui import QIcon, QFont
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QStatusBar, QMenuBar, QToolBar, QLayout
 
 from .widget import WidgetKwargs, widget
@@ -70,8 +70,8 @@ class MainWindow(QMainWindow):
         widget(**kwargs, _widget=self)
 
     @classmethod
-    def execute(cls):
-        app = QApplication([])
+    def execute(cls, argv: list[str] | None = None):
+        app = QApplication(argv or [])
         window = cls()
         window.show()
         return app.exec_()

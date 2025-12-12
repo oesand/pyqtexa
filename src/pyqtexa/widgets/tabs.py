@@ -23,7 +23,7 @@ class TabWidgetKwargs(WidgetKwargs):
     onTabMoved: NotRequired[Callable[[int, int], None]]
 
 
-def tabs(*, _tabs: QTabWidget | None = None, **kwargs: Unpack[TabWidgetKwargs]):
+def tabs(*, _tabs: QTabWidget | None = None, **kwargs: Unpack[TabWidgetKwargs]) -> QTabWidget:
     if _tabs is None:
         _tabs = QTabWidget()
 
