@@ -12,11 +12,6 @@ class MainWindow(QMainWindow):
         self,
         *,
         parent: QMainWindow | None = None,
-        icon: str | None = None,
-        title: str | None = None,
-        size: tuple[int, int] | int | None = None,
-        font: QFont | tuple[str, int] | None = None,
-        stylesheet: str | None = None,
         root: QWidget | QLayout = None,
         statusBar: QStatusBar = None,
         menuBar: QMenuBar = None,
@@ -32,23 +27,6 @@ class MainWindow(QMainWindow):
         **kwargs: Unpack[WidgetKwargs]
     ):
         super().__init__(parent=parent)
-
-        if icon: self.setWindowIcon(QIcon(str(icon)))
-        if title: self.setWindowTitle(title)
-        if size:
-            if isinstance(size, tuple):
-                self.resize(size[0], size[1])
-            else:
-                self.resize(size, size)
-
-        if font is not None:
-            if isinstance(font, tuple):
-                font = QFont(*font)
-            if isinstance(font, QFont):
-                self.setFont(font)
-
-        if stylesheet:
-            self.setStyleSheet(stylesheet)
 
         if root is not None:
             if isinstance(root, QLayout):

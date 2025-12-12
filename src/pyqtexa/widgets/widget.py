@@ -28,6 +28,7 @@ class WidgetKwargs(TypedDict):
     y: NotRequired[int]
     width: NotRequired[int]
     height: NotRequired[int]
+    size: NotRequired[QSize | tuple[int, int] | int]
 
     # BEHAVIOR
     enabled: NotRequired[bool]
@@ -43,13 +44,14 @@ class WidgetKwargs(TypedDict):
     # LOOK
     styleSheet: NotRequired[str]
     cursor: NotRequired[QCursor]
-    font: NotRequired[QFont]
+    font: NotRequired[QFont | tuple[str, int]]
     palette: NotRequired[QPalette]
     autoFillBackground: NotRequired[bool]
 
     # WINDOW PROPS
     windowTitle: NotRequired[str]
     windowOpacity: NotRequired[float]
+    windowIcon: NotRequired[str]
     windowIconText: NotRequired[str]
     windowRole: NotRequired[str]
     windowFilePath: NotRequired[str]
@@ -71,8 +73,6 @@ class WidgetKwargs(TypedDict):
 
     # QWidget event handlers
     onDestroyed: NotRequired[Callable[[QObject], None]]
-    onWindowTitleChanged: NotRequired[Callable[[str], None]]
-    onWindowIconChanged: NotRequired[Callable[[QIcon], None]]
     onCustomContextMenuRequested: NotRequired[Callable[[QPoint], None]]
 
 
@@ -88,14 +88,13 @@ def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]):
         _widget.setParent(kwargs["parent"])
 
     # SIZE
-    if "fixedSize" in kwargs:
-        v = kwargs["fixedSize"]
-        if isinstance(v, int):
-            _widget.setFixedSize(v, v)
-        elif isinstance(v, tuple):
-            _widget.setFixedSize(*v)
-        else:
-            _widget.setFixedSize(v)
+    if (size := kwargs.get("fixedSize")) is not None:
+        if isinstance(size, tuple):
+            _widget.setFixedSize(size[0], size[1])
+        elif isinstance(size, int):
+            _widget.setFixedSize(size, size)
+        elif isinstance(size, QSize):
+            _widget.setFixedSize(size)
 
     if "minimumSize" in kwargs:
         v = kwargs["minimumSize"]
@@ -137,6 +136,14 @@ def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]):
     if "height" in kwargs:
         _widget.resize(_widget.width(), kwargs["height"])
 
+    if (size := kwargs.get("size")) is not None:
+        if isinstance(size, tuple):
+            _widget.resize(size[0], size[1])
+        elif isinstance(size, int):
+            _widget.resize(size, size)
+        elif isinstance(size, QSize):
+            _widget.resize(size)
+
     # BEHAVIOR
     if "enabled" in kwargs:
         _widget.setEnabled(kwargs["enabled"])
@@ -162,8 +169,11 @@ def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]):
         _widget.setStyleSheet(kwargs["styleSheet"])
     if "cursor" in kwargs:
         _widget.setCursor(kwargs["cursor"])
-    if "font" in kwargs:
-        _widget.setFont(kwargs["font"])
+    if (font := kwargs.get("font")) is not None:
+        if isinstance(font, tuple):
+            font = QFont(*font)
+        if isinstance(font, QFont):
+            _widget.setFont(font)
     if "palette" in kwargs:
         _widget.setPalette(kwargs["palette"])
     if "autoFillBackground" in kwargs:
@@ -174,6 +184,8 @@ def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]):
         _widget.setWindowTitle(kwargs["windowTitle"])
     if "windowOpacity" in kwargs:
         _widget.setWindowOpacity(kwargs["windowOpacity"])
+    if "windowIcon" in kwargs:
+        _widget.setWindowIcon(QIcon(kwargs["windowIcon"]))
     if "windowIconText" in kwargs:
         _widget.setWindowIconText(kwargs["windowIconText"])
     if "windowRole" in kwargs:
@@ -210,10 +222,6 @@ def widget(*, _widget: QWidget | None = None, **kwargs: Unpack[WidgetKwargs]):
     # ---------- EVENT HANDLERS ----------
     if (fn := kwargs.get("onDestroyed")) is not None:
         _widget.destroyed.connect(fn)
-    if (fn := kwargs.get("onWindowTitleChanged")) is not None:
-        _widget.windowTitleChanged.connect(fn)
-    if (fn := kwargs.get("onWindowIconChanged")) is not None:
-        _widget.windowIconChanged.connect(fn)
     if (fn := kwargs.get("onCustomContextMenuRequested")) is not None:
         _widget.customContextMenuRequested.connect(fn)
 

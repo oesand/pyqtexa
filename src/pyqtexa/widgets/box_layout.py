@@ -4,14 +4,14 @@ from PyQt6.QtWidgets import QWidget, QBoxLayout, QLayout
 
 from .options import Align
 
-LayoutDirection = QBoxLayout.Direction
+BoxLayoutDirection = QBoxLayout.Direction
 
 
 class BoxLayoutKwargs(TypedDict):
     spacing: NotRequired[int]
     contentsMargins: NotRequired[tuple[int, int, int, int]]  # left, top, right, bottom
     alignment: NotRequired[Align]
-    direction: NotRequired[LayoutDirection]
+    direction: NotRequired[BoxLayoutDirection]
     sizeConstraint: NotRequired[QLayout.SizeConstraint]
     stretchFactors: NotRequired[dict[int, int]]  # (index, stretch)
     widgets: NotRequired[list[QWidget]]
@@ -19,7 +19,7 @@ class BoxLayoutKwargs(TypedDict):
 
 def boxLayout(*, _layout: QBoxLayout | None = None, **kwargs: Unpack[BoxLayoutKwargs]):
     if _layout is None:
-        _layout = QBoxLayout(kwargs.get("direction") or LayoutDirection.TopToBottom)
+        _layout = QBoxLayout(kwargs.get("direction") or BoxLayoutDirection.TopToBottom)
     elif (v := kwargs.get("direction")) is not None:
         _layout.setDirection(v)
 
@@ -35,7 +35,7 @@ def boxLayout(*, _layout: QBoxLayout | None = None, **kwargs: Unpack[BoxLayoutKw
     alignment = kwargs.get("alignment")
 
     if (widgets := kwargs.get("widgets")) is not None:
-        for w, align in widgets:
+        for w in widgets:
             _layout.addWidget(w, alignment=alignment)
 
     if (v := kwargs.get("stretchFactors")) is not None:
