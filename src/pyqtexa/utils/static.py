@@ -1,6 +1,6 @@
 import sys, inspect
 from pathlib import Path
-from . import classproperty
+from .property import classproperty
 
 
 class AppStatic:

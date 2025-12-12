@@ -1,3 +1,3 @@
 from . import widgets
-from . import utils
+from .utils import *
 from .overlay import *

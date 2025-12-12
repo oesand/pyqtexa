@@ -9,3 +9,4 @@ from .scroll import scroll
 from .table import table, tableRow
 from .tabs import tabs
 from .widget import widget
+from .window import MainWindow

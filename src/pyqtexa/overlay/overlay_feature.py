@@ -1,8 +1,8 @@
 from PyQt6.QtGui import QResizeEvent
 from PyQt6.QtWidgets import QMainWindow, QLayout, QWidget
 
-from .. import widgets
-from ..widgets.scroll import scroll, ScrollAreaKwargs
+from pyqtexa import widgets
+from pyqtexa.widgets.scroll import scroll, ScrollAreaKwargs
 
 
 class OverlayFeature:

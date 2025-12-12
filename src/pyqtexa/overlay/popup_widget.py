@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QLabel
 from PyQt6.QtCore import Qt, QPoint, QTimer
 
-from ..widgets import label
+from pyqtexa.widgets import label
 
 
 def errorPopup(parent: QWidget, text: str, *, ms_delay: int = 2000):
