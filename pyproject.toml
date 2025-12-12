@@ -1,6 +1,6 @@
 [project]
 name = "pyqtexa"
-version = "0.1.2"
+version = "0.1.3"
 description = "Extensions for PyQt"
 authors = [
     {name = "zapiy",email = "4ikosa@gmail.com"}
