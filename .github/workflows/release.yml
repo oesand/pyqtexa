@@ -1,0 +1,105 @@
+name: Auto Release 🚀
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  check_admin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔐 Check if triggered by admin
+        id: check_admin
+        run: |
+          permission=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.actor }}/permission" \
+            | jq -r .permission)
+          if [ "$permission" = "admin" ]; then
+            echo "is_admin=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_admin=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ✅ Run if admin
+        if: steps.check_admin.outputs.is_admin == 'true'
+        run: echo "Workflow triggered by an admin - ${{ github.actor }}"
+
+      - name: ❌ Fail if not admin
+        if: steps.check_admin.outputs.is_admin != 'true'
+        run: |
+          echo "Error: This workflow can only be triggered by organization admins"
+          exit 1
+
+  release:
+    needs: check_admin
+    if: needs.check_admin.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛎 Checkout repository
+        uses: actions/checkout@v6
+
+      - name: 🔧 Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install poetry
+          python -m poetry config virtualenvs.in-project true
+          poetry run pip install --upgrade pip
+          poetry install -v
+
+      - name: 🔄 Update & commit version in pyproject.toml
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"  # Strip 'v' prefix
+          sed -i "s/^version = \".*\"/version = \"$TAG_VERSION\"/" pyproject.toml
+
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git commit -am "🔄 Update version to ${GITHUB_REF_NAME}"
+          git push origin HEAD:main
+
+      - name: 🔧 Install build dependencies
+        run: poetry add --dev setuptools wheel twine build
+
+      - name: 📦 Build package
+        run: poetry run python -m build
+
+      - name: 🏷 Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          
+          FLAGS="--title $GITHUB_REF_NAME --generate-notes"
+          
+          if [[ "$GITHUB_REF_NAME" == *".0" ]]; then
+            echo "🟢 Detected minor release ($VERSION) — creating release"
+          else
+            echo "🟡 Detected patch release ($VERSION) — creating prerelease"
+            FLAGS="$FLAGS --prerelease"
+          fi
+          
+          gh release create $GITHUB_REF_NAME $FLAGS
+
+      - name: 🚀 Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: poetry run twine upload dist/*
+
+      - name: 🧲 Yank prerelease on PyPI
+        if: endsWith(github.ref_name, '.0') == false   # if patch != 0 → prerelease
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          
+          # Extract package name from pyproject.toml
+          PACKAGE_NAME=$(grep '^name =' pyproject.toml | sed 's/name = "\(.*\)"/\1/')
+          
+          echo "🟡 Yanking prerelease: $PACKAGE_NAME $VERSION"
+          poetry run twine yank "$PACKAGE_NAME" "$VERSION" -m "Auto-yanked prerelease"

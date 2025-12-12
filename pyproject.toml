@@ -1,0 +1,26 @@
+[project]
+name = "pyqtexa"
+version = "0.0.0"
+description = "Extensions for PyQt"
+authors = [
+    {name = "zapiy",email = "4ikosa@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pyqt6 (>=6.10.1,<7.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project.urls]
+Homepage = "https://github.com/oesand/pyqtexa"
+Repository = "https://github.com/oesand/pyqtexa"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
