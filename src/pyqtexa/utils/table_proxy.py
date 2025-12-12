@@ -21,7 +21,7 @@ class TableProxy(Generic[T]):
         handle_remove: Callable[[T], None] = None,
         **kwargs: Unpack[TableWidgetKwargs]
     ) -> None:
-        self.__pk: int = pk
+        self.__pk = pk
         self.__pk_stack = []
         self.__mapping = field_mapping
         self.__actions = actions

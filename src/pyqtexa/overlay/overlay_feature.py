@@ -34,7 +34,7 @@ class OverlayFeature:
         root: QWidget = self.__window.centralWidget()
 
         overflow = scroll(
-            **scrollKwargs,
+            **(scrollKwargs or {}),
             id="overlay-scrollarea",
             parent=root,
             widgetResizable=True,

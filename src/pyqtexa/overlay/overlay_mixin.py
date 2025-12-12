@@ -1,25 +1,25 @@
-from abc import ABC, abstractmethod
+from typing import Unpack
 
 from PyQt6.QtGui import QResizeEvent
 from PyQt6.QtWidgets import QMainWindow, QLayout
 
 from .overlay_feature import OverlayFeature
 from pyqtexa import widgets
+from pyqtexa.widgets.box_layout import BoxLayoutKwargs
 from pyqtexa.widgets.scroll import ScrollAreaKwargs
 
 
-class OverlayModal(ABC):
+class OverlayModal:
+    def __init__(self, **kwargs: Unpack[BoxLayoutKwargs]) -> None:
+        self.parent: 'OverlayMixin' = None
+        self.layout = widgets.boxLayout(**kwargs)
 
-    def __init__(self) -> None:
-        assert isinstance(self, QLayout), "Mixin must be extends from QLayout"
-
-    @abstractmethod
-    def overlaySignal(self, **kwargs):
-        pass
+    def overlay(self, _parent: 'OverlayMixin', **kwargs) -> QLayout:
+        self.parent = _parent
+        return self.layout
 
     def hide(self, *, every: bool = False):
-        mixin: 'OverlayMixin' = self.window
-        mixin.hideModal(every=every)
+        self.parent.hideOverlay(every=every)
 
 
 class OverlayMixin:
@@ -27,7 +27,7 @@ class OverlayMixin:
         assert isinstance(self, QMainWindow), "Mixin must be extends from QMainWindow"
         self.overlayFeature = OverlayFeature(self)
 
-    def showModal(
+    def showOverlay(
         self,
         content: QLayout | type[OverlayModal] | OverlayModal, *,
         closeManually: bool = True,
@@ -36,9 +36,9 @@ class OverlayMixin:
         signal: dict = None
     ):
         if isinstance(content, type(OverlayModal)):
-            content = content(self)
+            content = content()
         if isinstance(content, OverlayModal) and signal:
-            content.overlaySignal(**signal)
+            content = content.overlay(self, **(signal or {}))
 
         self.overlayFeature.show(
             content,
@@ -47,15 +47,15 @@ class OverlayMixin:
             scrollKwargs=scrollKwargs,
         )
 
-    def hideModal(self, *, every: bool = False):
+    def hideOverlay(self, *, every: bool = False):
         self.overlayFeature.hide(every=every)
 
-    def showTextPopup(self, text: str, *, okayText: str = "OK"):
-        self.showModal(
+    def showTextMessage(self, text: str, *, okayText: str = "OK"):
+        self.showOverlay(
             widgets.boxLayout(
                 widgets=[
                     widgets.label(text=text),
-                    widgets.button(text=okayText, onClicked= lambda _: self.hideModal())
+                    widgets.button(text=okayText, onClicked= lambda _: self.hideOverlay())
                 ]
             )
         )

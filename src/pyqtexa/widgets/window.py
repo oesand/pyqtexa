@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
         if root is not None:
             if isinstance(root, QLayout):
-                self.setLayout(root)
+                root = widget(layout=root)
             if isinstance(root, QWidget):
                 self.setCentralWidget(root)
 
@@ -70,8 +70,8 @@ class MainWindow(QMainWindow):
         widget(**kwargs, _widget=self)
 
     @classmethod
-    def execute(cls, argv: list[str] | None = None):
+    def execute(cls, argv: list[str] | None = None) -> int:
         app = QApplication(argv or [])
         window = cls()
         window.show()
-        return app.exec_()
+        return app.exec()
