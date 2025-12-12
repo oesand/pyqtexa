@@ -3,7 +3,7 @@ from PyQt6.QtGui import QDoubleValidator, QIntValidator
 
 
 class Align:
-    Left = Qt.AlignmentFlag.AlignLeft
+    Default = Left = Qt.AlignmentFlag.AlignLeft
     Leading = Qt.AlignmentFlag.AlignLeading
     Right = Qt.AlignmentFlag.AlignRight
     Trailing = Qt.AlignmentFlag.AlignTrailing

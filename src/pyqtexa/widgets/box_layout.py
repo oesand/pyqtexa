@@ -36,7 +36,10 @@ def boxLayout(*, _layout: QBoxLayout | None = None, **kwargs: Unpack[BoxLayoutKw
 
     if (widgets := kwargs.get("widgets")) is not None:
         for w in widgets:
-            _layout.addWidget(w, alignment=alignment)
+            if alignment:
+                _layout.addWidget(w, alignment=alignment)
+            else:
+                _layout.addWidget(w)
 
     if (v := kwargs.get("stretchFactors")) is not None:
         for index, stretch in v.items():
